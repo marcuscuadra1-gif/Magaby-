@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Para Magaby ✨ 15 años</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #fff;
+  }
+
+  #start-screen {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, #1a0a2e 0%, #000 70%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    cursor: pointer;
+    transition: opacity 0.8s ease;
+  }
+  #start-screen.hidden { opacity: 0; pointer-events: none; }
+
+  #start-heart {
+    font-size: clamp(80px, 22vw, 140px);
+    animation: latido 1.4s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px #ff6b9d) drop-shadow(0 0 40px #c44569);
+  }
+  @keyframes latido {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.18); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.1); }
+  }
+
+  #start-text {
+    margin-top: 20px;
+    font-size: 1.6rem;
+    color: #ffb6c1;
+    text-shadow: 0 0 10px #ff6b9d;
+    animation: parpadeo 2s ease-in-out infinite;
+  }
+  @keyframes parpadeo {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  #main-title {
+    position: fixed;
+    top: 30px;
+    left: 0; right: 0;
+    text-align: center;
+    font-size: clamp(1.4rem, 5vw, 2.4rem);
+    color: #ffd6e0;
+    text-shadow: 0 0 12px #ff6b9d, 0 0 25px #c44569;
+    z-index: 10;
+    pointer-events: none;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  canvas {
+    display: block;
+    position: fixed;
+    inset: 0;
+  }
+
+  .frase {
+    position: absolute;
+    color: #ffc0cb;
+    font-size: clamp(0.9rem, 3.2vw, 1.25rem);
+    text-shadow: 0 0 8px #ff6b9d, 0 0 15px rgba(255,107,157,0.5);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 5;
+    font-weight: 500;
+    animation: flotar 8s linear forwards;
+  }
+  @keyframes flotar {
+    0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+    15% { opacity: 1; transform: translateY(0) scale(1); }
+    85% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-40px) scale(1.05); }
+  }
+
+  #mensaje-final {
+    position: fixed;
+    bottom: 40px;
+    left: 0; right: 0;
+    text-align: center;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    pointer-events: none;
+  }
+  #mensaje-final.visible { opacity: 1; }
+  #mensaje-final h2 {
+    font-size: clamp(1.1rem, 4vw, 1.6rem);
+    color: #ffe4ec;
+    text-shadow: 0 0 10px #ff6b9d;
+    margin-bottom: 8px;
+  }
+  #mensaje-final p {
+    font-size: clamp(0.85rem, 3vw, 1.1rem);
+    color: #ffb6c1;
+    max-width: 90%;
+    margin: 0 auto;
+    line-height: 1.4;
+  }
+
+  .corazon-flotante {
+    position: absolute;
+    font-size: 18px;
+    color: #ff6b9d;
+    opacity: 0.7;
+    animation: subir 6s linear forwards;
+    pointer-events: none;
+  }
+  @keyframes subir {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    20% { opacity: 0.8; }
+    100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div id="start-screen">
+  <div id="start-heart">💖</div>
+  <div id="start-text">Toca para abrir tu galaxia</div>
+</div>
+
+<h1 id="main-title">Para Magaby ✨ Sus 15 años</h1>
+
+<canvas id="c"></canvas>
+
+<div id="mensaje-final">
+  <h2>Felices 15, Magaby</h2>
+  <p>
+    Te amo · Te adoro · Contigo todo es más bonito<br>
+    Como dice Zoé… “Es raro el amor” 💫<br>
+    Y el tuyo llegó justo cuando menos lo esperaba
+  </p>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let w, h;
+
+function resize() {
+  w = canvas.width = innerWidth;
+  h = canvas.height = innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Estrellas
+const estrellas = [];
+for (let i = 0; i < 350; i++) {
+  estrellas.push({
+    x: Math.random() * w,
+    y: Math.random() * h,
+    r: Math.random() * 1.4 + 0.3,
+    a: Math.random(),
+    s: Math.random() * 0.02 + 0.005
+  });
+}
+
+// Partículas de nebulosa
+const particulas = [];
+for (let i = 0; i < 80; i++) {
+  particulas.push({
+    x: Math.random() * w,
+    y: Math.random() * h,
+    r: Math.random() * 60 + 20,
+    a: Math.random() * 0.08 + 0.02,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3
+  });
+}
+
+const frases = [
+  "Te amo, Magaby 💖",
+  "Te adoro con todo mi ser",
+  "Felices 15 años, mi niña",
+  "Eres mi lugar favorito",
+  "Labios Rotos… y corazón lleno de ti",
+  "Es raro el amor… y apareciste tú",
+  "No importa la distancia ni el tiempo",
+  "Regálame tu corazón 💫",
+  "Te quiero cuidar con todo mi amor",
+  "Magaby, mi sol de todos los días",
+  "Hoy celebramos tus 15 años",
+  "Contigo hasta la eternidad",
+  "Eres la canción más bonita",
+  "Te amo más de lo que las palabras dicen",
+  "Mi reina de 15 👑",
+  "Donde nacen las flores… y nace el amor",
+  "Eres mi universo entero",
+  "Feliz cumpleaños, Magaby",
+  "Te adoro en cada latido",
+  "Que este día sea tan especial como tú"
+];
+
+let frasesActivas = [];
+
+function dibujar() {
+  // Fondo
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, w, h);
+
+  // Gradiente de nebulosa central
+  const grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.max(w,h)*0.7);
+  grad.addColorStop(0, 'rgba(80, 20, 60, 0.35)');
+  grad.addColorStop(0.4, 'rgba(40, 10, 50, 0.15)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+
+  // Partículas de nebulosa
+  particulas.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < -p.r) p.x = w + p.r;
+    if (p.x > w + p.r) p.x = -p.r;
+    if (p.y < -p.r) p.y = h + p.r;
+    if (p.y > h + p.r) p.y = -p.r;
+
+    const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+    g.addColorStop(0, `rgba(255, 105, 180, ${p.a})`);
+    g.addColorStop(0.5, `rgba(180, 50, 120, ${p.a * 0.4})`);
+    g.addColorStop(1, 'transparent');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Estrellas
+  estrellas.forEach(s => {
+    s.a += s.s;
+    if (s.a > 1 || s.a < 0.2) s.s *= -1;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 220, 240, ${s.a})`;
+    ctx.fill();
+  });
+
+  // Núcleo central suave
+  const nucleo = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, 80);
+  nucleo.addColorStop(0, 'rgba(255, 150, 200, 0.25)');
+  nucleo.addColorStop(0.5, 'rgba(180, 60, 120, 0.1)');
+  nucleo.addColorStop(1, 'transparent');
+  ctx.fillStyle = nucleo;
+  ctx.beginPath();
+  ctx.arc(w/2, h/2, 80, 0, Math.PI * 2);
+  ctx.fill();
+
+  requestAnimationFrame(dibujar);
+}
+
+// Frases flotantes
+function crearFrase() {
+  const f = document.createElement('div');
+  f.className = 'frase';
+  f.textContent = frases[Math.floor(Math.random() * frases.length)];
+  f.style.left = (Math.random() * 70 + 10) + '%';
+  f.style.top = (Math.random() * 60 + 15) + '%';
+  document.body.appendChild(f);
+  frasesActivas.push(f);
+  setTimeout(() => {
+    f.remove();
+    frasesActivas = frasesActivas.filter(x => x !== f);
+  }, 8000);
+}
+
+// Corazones que suben
+function crearCorazon() {
+  const c = document.createElement('div');
+  c.className = 'corazon-flotante';
+  c.textContent = ['💖','💗','💕','✨','🌸'][Math.floor(Math.random()*5)];
+  c.style.left = Math.random() * 100 + '%';
+  c.style.bottom = '-20px';
+  c.style.fontSize = (Math.random() * 14 + 14) + 'px';
+  document.body.appendChild(c);
+  setTimeout(() => c.remove(), 6000);
+}
+
+// Inicio
+const startScreen = document.getElementById('start-screen');
+const mensajeFinal = document.getElementById('mensaje-final');
+
+startScreen.addEventListener('click', () => {
+  startScreen.classList.add('hidden');
+  setTimeout(() => startScreen.style.display = 'none', 800);
+
+  dibujar();
+
+  // Frases cada 2.2 segundos
+  setInterval(crearFrase, 2200);
+  crearFrase();
+
+  // Corazones
+  setInterval(crearCorazon, 400);
+
+  // Mostrar mensaje final después de unos segundos
+  setTimeout(() => {
+    mensajeFinal.classList.add('visible');
+  }, 4000);
+});
+</script>
+</body>
+</html>
